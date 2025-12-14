@@ -3,7 +3,6 @@ import { CitySearch } from "@/components/CitySearch";
 import { WeatherDisplay } from "@/components/WeatherDisplay";
 import { Cloud, CloudRain, Sun } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface WeatherData {
   location: {
@@ -37,12 +36,6 @@ export default function Index() {
   const fetchWeather = async (city: string) => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('weather', {
-        body: null,
-        headers: {},
-      });
-
-      // Use fetch directly with query params
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/weather?q=${encodeURIComponent(city)}`,
         {
