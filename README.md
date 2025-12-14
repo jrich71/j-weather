@@ -41,8 +41,7 @@ npm run dev
 
 ## UI
 
-<img width=535" height="550" alt="image" src="https://github.com/user-attachments/assets/f30a3dce-0458-449d-b8bd-45dd41585671" />
-
+<img width="835" height="850" alt="image" src="https://github.com/user-attachments/assets/2a00b8ac-09f5-47a2-aa14-5f4309d69280" />
 
 ## Environment Variables
 
