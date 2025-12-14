@@ -67,7 +67,7 @@ export function WeatherDisplay({ data }: WeatherDisplayProps) {
           />
           <div className="text-center">
             <p className="text-7xl font-bold text-foreground tracking-tight">
-              {Math.round(current.temp_c)}°
+              {Math.round(current.temp_f)}°
             </p>
             <p className="text-lg text-muted-foreground font-medium">
               {current.condition.text}
@@ -80,7 +80,7 @@ export function WeatherDisplay({ data }: WeatherDisplayProps) {
           <p className="text-muted-foreground">
             Feels like{" "}
             <span className="font-semibold text-foreground">
-              {Math.round(current.feelslike_c)}°C
+              {Math.round(current.feelslike_f)}°F
             </span>
           </p>
         </div>
@@ -95,12 +95,12 @@ export function WeatherDisplay({ data }: WeatherDisplayProps) {
           <WeatherDetail
             icon={<Wind className="h-5 w-5 text-primary" />}
             label="Wind"
-            value={`${Math.round(current.wind_kph)} km/h ${current.wind_dir}`}
+            value={`${Math.round(current.wind_kph * 0.621371)} mph ${current.wind_dir}`}
           />
           <WeatherDetail
             icon={<Eye className="h-5 w-5 text-muted-foreground" />}
             label="Visibility"
-            value={`${current.vis_km} km`}
+            value={`${Math.round(current.vis_km * 0.621371)} mi`}
           />
           <WeatherDetail
             icon={<Sun className="h-5 w-5 text-weather-warm" />}
