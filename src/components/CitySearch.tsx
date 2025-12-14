@@ -17,8 +17,6 @@ interface CitySearchProps {
   isLoading: boolean;
 }
 
-const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
-
 export function CitySearch({ onCitySelect, isLoading }: CitySearchProps) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<City[]>([]);
@@ -38,7 +36,12 @@ export function CitySearch({ onCitySelect, isLoading }: CitySearchProps) {
       setIsFetching(true);
       try {
         const response = await fetch(
-          `https://api.weatherapi.com/v1/search.json?key=${API_KEY}&q=${encodeURIComponent(query)}`
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/weather?action=search&q=${encodeURIComponent(query)}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            },
+          }
         );
         if (response.ok) {
           const data = await response.json();
