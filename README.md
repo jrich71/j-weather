@@ -39,6 +39,11 @@ npm install
 npm run dev
 ```
 
+## UI
+
+<img width=535" height="550" alt="image" src="https://github.com/user-attachments/assets/f30a3dce-0458-449d-b8bd-45dd41585671" />
+
+
 ## Environment Variables
 
 The app requires a weather API key configured in the backend. If deploying your own instance,you'll need to set up the appropriate environment variables for the edge function.
