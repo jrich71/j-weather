@@ -1,6 +1,6 @@
 # Weather App
 
-A modern, responsive weather application built with React and TypeScript that allows users to search for cities and view current weather conditions.
+A modern responsive weather application built with React and TypeScript that allows users to search for cities and view current weather conditions.
 
 ## Features
 
@@ -41,7 +41,7 @@ npm run dev
 
 ## Environment Variables
 
-The app requires a weather API key configured in the backend. If deploying your own instance, you'll need to set up the appropriate environment variables for the edge function.
+The app requires a weather API key configured in the backend. If deploying your own instance,you'll need to set up the appropriate environment variables for the edge function.
 
 ## License
 
