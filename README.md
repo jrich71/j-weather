@@ -20,7 +20,7 @@ A modern responsive weather application built with React and TypeScript that all
 - **Frontend**: React, TypeScript, Vite
 - **Styling**: Tailwind CSS, shadcn/ui components
 - **Backend**: Supabase Edge Functions (Lovable Cloud)
-- **Weather Data**: WeatherAPI
+- **Weather Data**: WeatherAPI (https://www.weatherapi.com/)
 
 ## How It Works
 
