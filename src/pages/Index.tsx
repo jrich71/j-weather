@@ -3,8 +3,7 @@ import { CitySearch } from "@/components/CitySearch";
 import { WeatherDisplay } from "@/components/WeatherDisplay";
 import { Cloud, CloudRain, Sun } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+import { supabase } from "@/integrations/supabase/client";
 
 interface WeatherData {
   location: {
@@ -38,20 +37,32 @@ export default function Index() {
   const fetchWeather = async (city: string) => {
     setIsLoading(true);
     try {
+      const { data, error } = await supabase.functions.invoke('weather', {
+        body: null,
+        headers: {},
+      });
+
+      // Use fetch directly with query params
       const response = await fetch(
-        `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${encodeURIComponent(city)}&aqi=no`
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/weather?q=${encodeURIComponent(city)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+        }
       );
 
       if (!response.ok) {
-        throw new Error("City not found");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "City not found");
       }
 
-      const data = await response.json();
-      setWeatherData(data);
+      const weatherData = await response.json();
+      setWeatherData(weatherData);
     } catch (error) {
       toast({
         title: "Error",
-        description: "Could not fetch weather data. Please check the city name and try again.",
+        description: error instanceof Error ? error.message : "Could not fetch weather data. Please try again.",
         variant: "destructive",
       });
       setWeatherData(null);
