@@ -1,13 +1,52 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+// Define allowed origins for CORS - restrict to your app's domains
+const ALLOWED_ORIGINS = [
+  'https://qlubcsbwtcqnbcvgcyfm.lovableproject.com',
+  'https://lovable.dev',
+  'http://localhost:8080',
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
 
 const WEATHER_API_KEY = Deno.env.get('WEATHER_API_KEY');
 
+// Helper to get CORS headers based on request origin
+const getCorsHeaders = (origin: string | null) => {
+  const allowedOrigin = origin && ALLOWED_ORIGINS.some(allowed => 
+    origin === allowed || origin.endsWith('.lovable.app') || origin.endsWith('.lovableproject.com')
+  ) ? origin : ALLOWED_ORIGINS[0];
+  
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  };
+};
+
+// Validate query input - only allow safe characters for city/location queries
+const validateQuery = (query: string): { valid: boolean; error?: string } => {
+  // Check length
+  if (query.length < 2) {
+    return { valid: false, error: 'Query must be at least 2 characters' };
+  }
+  if (query.length > 100) {
+    return { valid: false, error: 'Query must be less than 100 characters' };
+  }
+  
+  // Allow letters, numbers, spaces, commas, periods, hyphens, and common diacritics
+  const validPattern = /^[\p{L}\p{N}\s,.\-']+$/u;
+  if (!validPattern.test(query)) {
+    return { valid: false, error: 'Query contains invalid characters' };
+  }
+  
+  return { valid: true };
+};
+
 serve(async (req) => {
+  const origin = req.headers.get('Origin');
+  const corsHeaders = getCorsHeaders(origin);
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -21,6 +60,16 @@ serve(async (req) => {
     if (!query) {
       return new Response(
         JSON.stringify({ error: 'Query parameter "q" is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate the query input
+    const validation = validateQuery(query);
+    if (!validation.valid) {
+      console.warn('Invalid query rejected:', query.substring(0, 50));
+      return new Response(
+        JSON.stringify({ error: validation.error }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
