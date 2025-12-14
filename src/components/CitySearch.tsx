@@ -83,6 +83,10 @@ export function CitySearch({ onCitySelect, isLoading }: CitySearchProps) {
     } else if (query.trim()) {
       onCitySelect(query.trim());
     }
+    // Clear the input after submitting so user can easily search for a new city
+    setQuery("");
+    setSelectedCity(null);
+    setSuggestions([]);
   };
 
   return (
