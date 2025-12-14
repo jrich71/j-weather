@@ -1,4 +1,6 @@
-import { Cloud, Droplets, Wind, Thermometer, Eye, Sun } from "lucide-react";
+import { useState } from "react";
+import { Droplets, Wind, Eye, Sun } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface WeatherData {
   location: {
@@ -29,6 +31,7 @@ interface WeatherDisplayProps {
 }
 
 export function WeatherDisplay({ data }: WeatherDisplayProps) {
+  const [useFahrenheit, setUseFahrenheit] = useState(true);
   const { location, current } = data;
 
   const formatTime = (datetime: string) => {
@@ -42,9 +45,47 @@ export function WeatherDisplay({ data }: WeatherDisplayProps) {
     });
   };
 
+  const temp = useFahrenheit ? Math.round(current.temp_f) : Math.round(current.temp_c);
+  const feelsLike = useFahrenheit ? Math.round(current.feelslike_f) : Math.round(current.feelslike_c);
+  const tempUnit = useFahrenheit ? "F" : "C";
+  const windSpeed = useFahrenheit 
+    ? `${Math.round(current.wind_kph * 0.621371)} mph` 
+    : `${Math.round(current.wind_kph)} km/h`;
+  const visibility = useFahrenheit 
+    ? `${Math.round(current.vis_km * 0.621371)} mi` 
+    : `${current.vis_km} km`;
+
   return (
     <div className="w-full max-w-lg mx-auto animate-slide-up">
       <div className="glass rounded-3xl p-8 space-y-6">
+        {/* Unit Toggle */}
+        <div className="flex justify-center">
+          <div className="inline-flex items-center gap-1 p-1 rounded-full bg-secondary/50">
+            <button
+              onClick={() => setUseFahrenheit(true)}
+              className={cn(
+                "px-4 py-1.5 rounded-full text-sm font-medium transition-all",
+                useFahrenheit 
+                  ? "bg-primary text-primary-foreground shadow-sm" 
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              °F
+            </button>
+            <button
+              onClick={() => setUseFahrenheit(false)}
+              className={cn(
+                "px-4 py-1.5 rounded-full text-sm font-medium transition-all",
+                !useFahrenheit 
+                  ? "bg-primary text-primary-foreground shadow-sm" 
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              °C
+            </button>
+          </div>
+        </div>
+
         {/* Location Header */}
         <div className="text-center">
           <h2 className="text-2xl font-semibold text-foreground">
@@ -67,7 +108,7 @@ export function WeatherDisplay({ data }: WeatherDisplayProps) {
           />
           <div className="text-center">
             <p className="text-7xl font-bold text-foreground tracking-tight">
-              {Math.round(current.temp_f)}°
+              {temp}°
             </p>
             <p className="text-lg text-muted-foreground font-medium">
               {current.condition.text}
@@ -80,7 +121,7 @@ export function WeatherDisplay({ data }: WeatherDisplayProps) {
           <p className="text-muted-foreground">
             Feels like{" "}
             <span className="font-semibold text-foreground">
-              {Math.round(current.feelslike_f)}°F
+              {feelsLike}°{tempUnit}
             </span>
           </p>
         </div>
@@ -95,12 +136,12 @@ export function WeatherDisplay({ data }: WeatherDisplayProps) {
           <WeatherDetail
             icon={<Wind className="h-5 w-5 text-primary" />}
             label="Wind"
-            value={`${Math.round(current.wind_kph * 0.621371)} mph ${current.wind_dir}`}
+            value={`${windSpeed} ${current.wind_dir}`}
           />
           <WeatherDetail
             icon={<Eye className="h-5 w-5 text-muted-foreground" />}
             label="Visibility"
-            value={`${Math.round(current.vis_km * 0.621371)} mi`}
+            value={visibility}
           />
           <WeatherDetail
             icon={<Sun className="h-5 w-5 text-weather-warm" />}
