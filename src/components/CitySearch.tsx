@@ -3,17 +3,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface City {
-  id: number;
-  name: string;
-  region: string;
-  country: string;
-  url: string;
-}
+import { searchCities, City } from "@/lib/weather";
 
 interface CitySearchProps {
-  onCitySelect: (city: string) => void;
+  onCitySelect: (city: City) => void;
   isLoading: boolean;
 }
 
@@ -35,19 +28,9 @@ export function CitySearch({ onCitySelect, isLoading }: CitySearchProps) {
 
       setIsFetching(true);
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/weather?action=search&q=${encodeURIComponent(query)}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-            },
-          }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setSuggestions(data);
-          setShowSuggestions(true);
-        }
+        const cities = await searchCities(query);
+        setSuggestions(cities);
+        setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to fetch suggestions:", error);
       } finally {
@@ -79,11 +62,8 @@ export function CitySearch({ onCitySelect, isLoading }: CitySearchProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedCity) {
-      onCitySelect(selectedCity.name);
-    } else if (query.trim()) {
-      onCitySelect(query.trim());
+      onCitySelect(selectedCity);
     }
-    // Clear the input after submitting so user can easily search for a new city
     setQuery("");
     setSelectedCity(null);
     setSuggestions([]);
@@ -115,7 +95,7 @@ export function CitySearch({ onCitySelect, isLoading }: CitySearchProps) {
             type="submit"
             variant="weather"
             size="lg"
-            disabled={isLoading || (!selectedCity && !query.trim())}
+            disabled={isLoading || !selectedCity}
             className="h-14 px-6"
           >
             {isLoading ? (

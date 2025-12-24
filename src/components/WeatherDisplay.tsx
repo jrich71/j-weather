@@ -1,30 +1,7 @@
 import { useState } from "react";
 import { Droplets, Wind, Eye, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface WeatherData {
-  location: {
-    name: string;
-    region: string;
-    country: string;
-    localtime: string;
-  };
-  current: {
-    temp_c: number;
-    temp_f: number;
-    condition: {
-      text: string;
-      icon: string;
-    };
-    humidity: number;
-    wind_kph: number;
-    wind_dir: string;
-    feelslike_c: number;
-    feelslike_f: number;
-    vis_km: number;
-    uv: number;
-  };
-}
+import { WeatherData } from "@/lib/weather";
 
 interface WeatherDisplayProps {
   data: WeatherData;
@@ -101,11 +78,9 @@ export function WeatherDisplay({ data }: WeatherDisplayProps) {
 
         {/* Main Weather */}
         <div className="flex items-center justify-center gap-4">
-          <img
-            src={`https:${current.condition.icon}`}
-            alt={current.condition.text}
-            className="w-24 h-24 animate-float"
-          />
+          <span className="text-7xl animate-float" role="img" aria-label={current.condition.text}>
+            {current.condition.icon}
+          </span>
           <div className="text-center">
             <p className="text-7xl font-bold text-foreground tracking-tight">
               {temp}°

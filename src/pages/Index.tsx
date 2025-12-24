@@ -3,55 +3,24 @@ import { CitySearch } from "@/components/CitySearch";
 import { WeatherDisplay } from "@/components/WeatherDisplay";
 import { Cloud, CloudRain, Sun } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-interface WeatherData {
-  location: {
-    name: string;
-    region: string;
-    country: string;
-    localtime: string;
-  };
-  current: {
-    temp_c: number;
-    temp_f: number;
-    condition: {
-      text: string;
-      icon: string;
-    };
-    humidity: number;
-    wind_kph: number;
-    wind_dir: string;
-    feelslike_c: number;
-    feelslike_f: number;
-    vis_km: number;
-    uv: number;
-  };
-}
+import { fetchWeatherByCoords, WeatherData, City } from "@/lib/weather";
 
 export default function Index() {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const fetchWeather = async (city: string) => {
+  const fetchWeather = async (city: City) => {
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/weather?q=${encodeURIComponent(city)}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-        }
+      const data = await fetchWeatherByCoords(
+        city.latitude,
+        city.longitude,
+        city.name,
+        city.region,
+        city.country
       );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "City not found");
-      }
-
-      const weatherData = await response.json();
-      setWeatherData(weatherData);
+      setWeatherData(data);
     } catch (error) {
       toast({
         title: "Error",
